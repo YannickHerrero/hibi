@@ -6,7 +6,7 @@ import {
   HeatmapResponseSchema,
   RetentionResponseSchema,
 } from "@hibi/types";
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { and, eq, gte, lt, sql } from "drizzle-orm";
 import { getDb } from "../db.ts";
 import { apiKeyAuth } from "../middleware/api-key.ts";

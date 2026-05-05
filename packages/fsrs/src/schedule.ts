@@ -1,4 +1,4 @@
-import { type Card as FsrsCard, type Grade, Rating, State, createEmptyCard, fsrs } from "ts-fsrs";
+import { createEmptyCard, type Card as FsrsCard, fsrs, type Grade, Rating, State } from "ts-fsrs";
 
 export type CardStateName = "new" | "learning" | "review" | "relearning";
 

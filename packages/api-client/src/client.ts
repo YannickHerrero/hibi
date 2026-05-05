@@ -2,10 +2,10 @@ import {
   CardSchema,
   type CreateCardInput,
   CreateCardInputSchema,
-  DailyCountResponseSchema,
   type DailyCountQuery,
-  HeatmapResponseSchema,
+  DailyCountResponseSchema,
   type HeatmapQuery,
+  HeatmapResponseSchema,
   type ListCardsQuery,
   PaginatedSchema,
   RetentionResponseSchema,
@@ -30,7 +30,9 @@ export interface HibiClientError extends Error {
 
 const PaginatedCardSchema = PaginatedSchema(CardSchema);
 const DueResponseSchema = z.object({
-  items: z.array(z.object({ card: CardSchema, cardState: SubmitReviewResultSchema.shape.cardState })),
+  items: z.array(
+    z.object({ card: CardSchema, cardState: SubmitReviewResultSchema.shape.cardState }),
+  ),
 });
 
 function asError(status: number, body: unknown): HibiClientError {

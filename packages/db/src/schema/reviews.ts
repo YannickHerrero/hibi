@@ -1,6 +1,6 @@
 import { doublePrecision, index, integer, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
-import { cards } from "./cards.ts";
 import { cardStateEnum } from "./card-states.ts";
+import { cards } from "./cards.ts";
 
 export const reviews = pgTable(
   "reviews",

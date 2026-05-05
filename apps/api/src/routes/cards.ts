@@ -5,10 +5,10 @@ import {
   CreateCardInputSchema,
   ListCardsQuerySchema,
   PaginatedSchema,
-  UUIDSchema,
   UpdateCardInputSchema,
+  UUIDSchema,
 } from "@hibi/types";
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { and, desc, eq, lt } from "drizzle-orm";
 import { getDb } from "../db.ts";
 import { notFound } from "../lib/errors.ts";
@@ -46,7 +46,10 @@ cardsApp.openapi(
     const db = getDb();
 
     const card = await db.transaction(async (tx) => {
-      const [row] = await tx.insert(cards).values({ ...body, userId }).returning();
+      const [row] = await tx
+        .insert(cards)
+        .values({ ...body, userId })
+        .returning();
       if (!row) throw new Error("Failed to insert card");
       const initial = initialState();
       await tx.insert(cardStates).values({

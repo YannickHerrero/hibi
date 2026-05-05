@@ -1,5 +1,5 @@
-import { FuriganaText, type FuriganaPair } from "./FuriganaText.tsx";
-import { ReviewButtonGroup, type Rating } from "./ReviewButton.tsx";
+import { type FuriganaPair, FuriganaText } from "./FuriganaText.tsx";
+import { type Rating, ReviewButtonGroup } from "./ReviewButton.tsx";
 
 interface Props {
   furigana: FuriganaPair[];

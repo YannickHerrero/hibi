@@ -34,10 +34,7 @@ app.onError((err, c) => {
     );
   }
   console.error(err);
-  return c.json(
-    { error: { code: "internal_error", message: "Internal server error" } },
-    500,
-  );
+  return c.json({ error: { code: "internal_error", message: "Internal server error" } }, 500);
 });
 
 app.route("/v1/cards", cardsApp);

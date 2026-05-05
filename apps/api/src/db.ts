@@ -1,4 +1,4 @@
-import { type Database, createDb } from "@hibi/db";
+import { createDb, type Database } from "@hibi/db";
 import { getEnv } from "./env.ts";
 
 let instance: Database | null = null;

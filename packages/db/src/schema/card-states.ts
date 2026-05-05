@@ -1,12 +1,15 @@
-import { doublePrecision, index, integer, pgEnum, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  doublePrecision,
+  index,
+  integer,
+  pgEnum,
+  pgTable,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { cards } from "./cards.ts";
 
-export const cardStateEnum = pgEnum("card_state", [
-  "new",
-  "learning",
-  "review",
-  "relearning",
-]);
+export const cardStateEnum = pgEnum("card_state", ["new", "learning", "review", "relearning"]);
 
 export const cardStates = pgTable(
   "card_states",

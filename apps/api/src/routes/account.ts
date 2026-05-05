@@ -6,7 +6,7 @@ import {
   CreateApiKeyResponseSchema,
   UUIDSchema,
 } from "@hibi/types";
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { and, desc, eq } from "drizzle-orm";
 import { getDb } from "../db.ts";
 import { generateApiKey, hashApiKey } from "../lib/crypto.ts";
@@ -99,16 +99,13 @@ accountApp.openapi(
     const rawKey = generateApiKey();
     const keyHash = hashApiKey(rawKey);
 
-    const [row] = await db
-      .insert(apiKeys)
-      .values({ userId, name, keyHash })
-      .returning({
-        id: apiKeys.id,
-        name: apiKeys.name,
-        lastUsedAt: apiKeys.lastUsedAt,
-        createdAt: apiKeys.createdAt,
-        revokedAt: apiKeys.revokedAt,
-      });
+    const [row] = await db.insert(apiKeys).values({ userId, name, keyHash }).returning({
+      id: apiKeys.id,
+      name: apiKeys.name,
+      lastUsedAt: apiKeys.lastUsedAt,
+      createdAt: apiKeys.createdAt,
+      revokedAt: apiKeys.revokedAt,
+    });
 
     if (!row) throw new Error("Failed to insert api key");
 
