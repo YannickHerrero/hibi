@@ -30,6 +30,7 @@ export const CardStateRowSchema = z.object({
   scheduledDays: z.number(),
   reps: z.number().int().nonnegative(),
   lapses: z.number().int().nonnegative(),
+  learningSteps: z.number().int().nonnegative(),
   state: CardStateSchema,
   lastReview: TimestampSchema.nullable(),
 });

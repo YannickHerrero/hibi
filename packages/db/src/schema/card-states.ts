@@ -23,6 +23,7 @@ export const cardStates = pgTable(
     scheduledDays: doublePrecision("scheduled_days").notNull().default(0),
     reps: integer("reps").notNull().default(0),
     lapses: integer("lapses").notNull().default(0),
+    learningSteps: integer("learning_steps").notNull().default(0),
     state: cardStateEnum("state").notNull().default("new"),
     lastReview: timestamp("last_review", { withTimezone: true }),
   },
