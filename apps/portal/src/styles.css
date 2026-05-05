@@ -1,0 +1,57 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f4ebd9;
+  color: #2b241b;
+}
+
+.app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(43, 36, 27, 0.1);
+}
+
+.app-header .brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.app-header nav {
+  display: flex;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.app-header nav a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-header nav a.active {
+  text-decoration: underline;
+}
+
+.app-main {
+  padding: 2rem 1.5rem;
+}
