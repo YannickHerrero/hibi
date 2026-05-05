@@ -16,7 +16,7 @@ const STORAGE_KEY = "hibi.design.theme";
 
 function readInitialTheme(): ThemeName {
   if (typeof document === "undefined") return "paper";
-  const fromAttr = document.documentElement.dataset["theme"] as ThemeName | undefined;
+  const fromAttr = document.documentElement.dataset.theme as ThemeName | undefined;
   if (fromAttr && THEMES.includes(fromAttr)) return fromAttr;
   const fromStorage = localStorage.getItem(STORAGE_KEY) as ThemeName | null;
   if (fromStorage && THEMES.includes(fromStorage)) return fromStorage;
@@ -27,7 +27,7 @@ export function useTheme(): [ThemeName, (next: ThemeName) => void] {
   const [theme, setTheme] = useState<ThemeName>(readInitialTheme);
 
   useEffect(() => {
-    document.documentElement.dataset["theme"] = theme;
+    document.documentElement.dataset.theme = theme;
     localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);
 

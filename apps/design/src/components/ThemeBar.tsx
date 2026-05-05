@@ -10,7 +10,8 @@ export function ThemeBar({ theme, onChange }: Props) {
     <div className="theme-bar">
       <div className="theme-bar-inner">
         <span className="meta">Hibi · Design System · v1.0</span>
-        <div className="theme-pills" role="group" aria-label="Theme">
+        <fieldset className="theme-pills" style={{ border: "none", padding: 0, margin: 0 }}>
+          <legend style={{ position: "absolute", left: -9999, top: -9999 }}>Theme</legend>
           {THEMES.map((name) => {
             const [paper, ink, accent] = THEME_SWATCHES[name];
             const active = theme === name;
@@ -29,7 +30,7 @@ export function ThemeBar({ theme, onChange }: Props) {
               </button>
             );
           })}
-        </div>
+        </fieldset>
       </div>
     </div>
   );
