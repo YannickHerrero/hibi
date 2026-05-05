@@ -1,2 +1,1 @@
-// Schema barrel — populated as tables are added.
-export {};
+export * from "./cards.ts";
