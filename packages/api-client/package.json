@@ -1,0 +1,57 @@
+{
+  "name": "hibi-client",
+  "version": "0.0.0",
+  "description": "Official TypeScript client for the Hibi flashcard API.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YannickHerrero/hibi.git",
+    "directory": "packages/api-client"
+  },
+  "homepage": "https://github.com/YannickHerrero/hibi/tree/master/packages/api-client",
+  "bugs": "https://github.com/YannickHerrero/hibi/issues",
+  "keywords": [
+    "hibi",
+    "srs",
+    "anki",
+    "flashcards",
+    "japanese",
+    "fsrs",
+    "sentence-mining"
+  ],
+  "author": "yannickhrr",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hibi/types": "workspace:*",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "tsup": "8.5.1",
+    "typescript": "6.0.3",
+    "vitest": "4.1.5"
+  }
+}
