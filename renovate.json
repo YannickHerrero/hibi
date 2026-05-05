@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":prHourlyLimit2",
+    ":prConcurrentLimit10",
+    "group:monorepos",
+    "group:recommended"
+  ],
+  "rangeStrategy": "bump",
+  "schedule": ["before 4am on Monday"],
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true
+    },
+    {
+      "matchPackageNames": ["typescript"],
+      "rangeStrategy": "pin"
+    },
+    {
+      "matchPackageNames": ["node"],
+      "enabled": false
+    }
+  ]
+}
