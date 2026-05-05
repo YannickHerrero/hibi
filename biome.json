@@ -9,13 +9,16 @@
     "includes": [
       "**",
       "!**/dist",
+      "!**/dist-types",
+      "!**/dist-types-node",
       "!**/build",
       "!**/.turbo",
       "!**/.astro",
       "!**/.vercel",
       "!**/node_modules",
       "!**/coverage",
-      "!**/pnpm-lock.yaml"
+      "!**/pnpm-lock.yaml",
+      "!**/public/fonts"
     ]
   },
   "formatter": {
@@ -51,5 +54,21 @@
         "organizeImports": "on"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["apps/design/src/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noArrayIndexKey": "off"
+          },
+          "a11y": {
+            "noStaticElementInteractions": "off",
+            "useKeyWithClickEvents": "off"
+          }
+        }
+      }
+    }
+  ]
 }
