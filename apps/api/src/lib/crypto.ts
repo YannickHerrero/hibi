@@ -1,5 +1,4 @@
-import { randomBytes } from "node:crypto";
-import { Algorithm, hash, verify } from "@node-rs/argon2";
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { getEnv } from "../env.ts";
 
 const KEY_PREFIX = "hibi_";
@@ -9,17 +8,15 @@ export function generateApiKey(): string {
   return KEY_PREFIX + bytes.toString("base64url");
 }
 
-export async function hashApiKey(rawKey: string): Promise<string> {
-  return hash(rawKey, {
-    algorithm: Algorithm.Argon2id,
-    secret: Buffer.from(getEnv().API_KEY_PEPPER),
-  });
+export function hashApiKey(rawKey: string): string {
+  return createHmac("sha256", getEnv().API_KEY_PEPPER).update(rawKey).digest("hex");
 }
 
-export async function verifyApiKey(rawKey: string, storedHash: string): Promise<boolean> {
-  return verify(storedHash, rawKey, {
-    secret: Buffer.from(getEnv().API_KEY_PEPPER),
-  });
+export function constantTimeEquals(a: string, b: string): boolean {
+  const ab = Buffer.from(a);
+  const bb = Buffer.from(b);
+  if (ab.length !== bb.length) return false;
+  return timingSafeEqual(ab, bb);
 }
 
 export function isApiKeyShape(token: string): boolean {
