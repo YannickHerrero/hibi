@@ -1,0 +1,17 @@
+{
+  "name": "@hibi/api",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hibi/db": "workspace:*",
+    "@hibi/fsrs": "workspace:*",
+    "@hibi/types": "workspace:*"
+  }
+}
