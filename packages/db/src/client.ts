@@ -1,6 +1,10 @@
-// Client factory — populated once drizzle-orm is installed.
-export type Database = unknown;
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+import * as schema from "./schema/index.ts";
 
-export function createDb(_databaseUrl: string): Database {
-  throw new Error("createDb is not yet implemented — install drizzle-orm and postgres first.");
+export type Database = ReturnType<typeof drizzle<typeof schema>>;
+
+export function createDb(databaseUrl: string): Database {
+  const client = postgres(databaseUrl, { prepare: false });
+  return drizzle(client, { schema });
 }
