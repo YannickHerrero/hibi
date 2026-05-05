@@ -22,5 +22,8 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "turbo run build --filter=hibi-client && changeset publish"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3"
   }
 }
