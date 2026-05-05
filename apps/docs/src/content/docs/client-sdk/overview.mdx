@@ -1,0 +1,15 @@
+---
+title: Client SDK overview
+description: The hibi-client package and how to use it.
+---
+
+`hibi-client` is the official TypeScript client for the Hibi API. It exposes a small, narrowly-scoped surface:
+
+- `client.cards.*` — create, list, update, delete cards
+- `client.reviews.*` — query due cards, submit reviews
+- `client.stats.*` — heatmap, retention, daily counts
+- `client.account.*` — current account info, manage keys (portal contexts only)
+
+The client uses runtime Zod validation against `@hibi/types` so you can trust the shapes that come back, even at the boundary.
+
+There is **no dictionary surface**. JMdict and morphological analysis live entirely in the mining clients (Tsumu on web, Horu on mobile, Kiseki on mobile). The Hibi API is strictly a flashcard backend.

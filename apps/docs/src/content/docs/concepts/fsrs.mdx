@@ -1,0 +1,26 @@
+---
+title: FSRS scheduling
+description: How Hibi schedules reviews using the FSRS-5 algorithm.
+---
+
+Hibi uses **FSRS** (Free Spaced Repetition Scheduler) via the [`ts-fsrs`](https://github.com/open-spaced-repetition/ts-fsrs) library. FSRS is a modern alternative to the SM-2 algorithm pioneered by SuperMemo and used historically by Anki.
+
+## Why FSRS over SM-2
+
+- Better retention prediction with fewer reviews
+- Per-user parameter optimization once enough review history accumulates
+- Active maintenance and a cleaner mental model (stability + difficulty, not arbitrary "ease factor")
+
+## Where the math lives
+
+FSRS state for each card is stored in the `card_states` row (1:1 with `cards`):
+
+| Field | Meaning |
+|---|---|
+| `due` | When the card is next due |
+| `stability` | How long the memory is expected to last |
+| `difficulty` | How hard the card is for this user |
+| `state` | `new`, `learning`, `review`, `relearning` |
+| `reps`, `lapses` | Counters |
+
+Submitting a review is a single API call (`POST /v1/reviews`) that runs the FSRS update **server-side** in a transaction: the new state is computed, `card_states` is updated, and a row is appended to `reviews` (the event log used for stats).

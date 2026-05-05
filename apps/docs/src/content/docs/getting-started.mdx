@@ -1,0 +1,54 @@
+---
+title: Getting started
+description: Install hibi-client and make your first API call.
+---
+
+This guide walks through installing the TypeScript client and creating your first card.
+
+## Install
+
+```bash
+pnpm add hibi-client
+```
+
+## Create a client
+
+```ts
+import { createHibiClient } from "hibi-client";
+
+const client = createHibiClient({
+  apiKey: "hibi_...",
+  baseUrl: "https://api.hibi.app",
+});
+```
+
+## Get an API key
+
+Sign in at [app.hibi.app](https://app.hibi.app), open **API keys**, and create a new key. The raw value is shown once at creation — store it where your client can read it.
+
+## Create your first card
+
+```ts
+const card = await client.cards.create({
+  sentence: "彼女は本を読んでいる",
+  focusWord: "読んでいる",
+  focusWordReading: "よんでいる",
+  furigana: [
+    { base: "彼女", reading: "かのじょ" },
+    { base: "は", reading: "" },
+    { base: "本", reading: "ほん" },
+    { base: "を", reading: "" },
+    { base: "読んでいる", reading: "よんでいる" },
+  ],
+  english: "She is reading a book.",
+  glosses: ["to read"],
+  grammarNote: null,
+  kanjiList: [],
+  imageKey: null,
+  audioKey: null,
+  source: "Sample",
+  tags: [],
+});
+```
+
+That's it — the card is now in your deck.
