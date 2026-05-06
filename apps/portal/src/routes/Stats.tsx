@@ -1,15 +1,17 @@
 import { useMemo, useState } from "react";
 import { Heatmap } from "../components/extensions/Heatmap.tsx";
 import {
-  HEATMAP_YEARS_OFFERED,
   fakeDailyToday,
   fakeHeatmap,
   fakeOverview,
   fakeRetention,
+  HEATMAP_YEARS_OFFERED,
 } from "../lib/fake-stats.ts";
 
 export function Stats() {
-  const [year, setYear] = useState<number>(HEATMAP_YEARS_OFFERED[HEATMAP_YEARS_OFFERED.length - 1]!);
+  const [year, setYear] = useState<number>(
+    HEATMAP_YEARS_OFFERED.at(-1) ?? new Date().getUTCFullYear(),
+  );
 
   const overview = useMemo(() => fakeOverview(), []);
   const today = useMemo(() => fakeDailyToday(), []);
@@ -45,7 +47,8 @@ export function Stats() {
           <span className="display" style={{ fontSize: 24 }}>
             Heatmap
           </span>
-          <div className="btn-segment" role="group" aria-label="Year">
+          <fieldset className="btn-segment" style={{ border: "none", padding: 0, margin: 0 }}>
+            <legend style={{ position: "absolute", left: -9999, top: -9999 }}>Year</legend>
             {HEATMAP_YEARS_OFFERED.map((y) => (
               <button
                 type="button"
@@ -56,7 +59,7 @@ export function Stats() {
                 {y}
               </button>
             ))}
-          </div>
+          </fieldset>
         </div>
         <div style={{ overflowX: "auto", paddingBottom: 12 }}>
           <Heatmap year={heatmap.year} days={heatmap.days} />
@@ -97,15 +100,7 @@ export function Stats() {
   );
 }
 
-function StatCard({
-  label,
-  value,
-  hint,
-}: {
-  label: string;
-  value: number;
-  hint: string;
-}) {
+function StatCard({ label, value, hint }: { label: string; value: number; hint: string }) {
   return (
     <div className="stat-card">
       <div className="meta">{label}</div>

@@ -92,7 +92,6 @@ export function Login() {
               placeholder="you@example.com"
               required
               autoComplete="email"
-              autoFocus
             />
           </div>
           <div style={{ marginTop: 24 }}>
@@ -125,7 +124,6 @@ export function Login() {
               placeholder="123456"
               required
               autoComplete="one-time-code"
-              autoFocus
               style={{ letterSpacing: "0.4em" }}
             />
           </div>
