@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+try {
+  process.loadEnvFile(new URL("../../../.env", import.meta.url));
+} catch {
+  // .env optional — vars may come from Vercel/CI/shell instead.
+}
+
 const EnvSchema = z.object({
   DATABASE_URL: z.string().url(),
   SUPABASE_URL: z.string().url(),

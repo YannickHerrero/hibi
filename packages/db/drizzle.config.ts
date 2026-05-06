@@ -1,7 +1,7 @@
 import { defineConfig } from "drizzle-kit";
 
 try {
-  process.loadEnvFile("../../.env");
+  process.loadEnvFile(new URL("../../.env", import.meta.url));
 } catch {
   // .env is optional — vars may come from CI/Vercel/shell instead.
 }
