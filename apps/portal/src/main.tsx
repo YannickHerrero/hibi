@@ -6,7 +6,7 @@ import { Account } from "./routes/Account.tsx";
 import { Keys } from "./routes/Keys.tsx";
 import { Login } from "./routes/Login.tsx";
 import { Stats } from "./routes/Stats.tsx";
-import "./styles.css";
+import "./styles/index.css";
 
 const router = createBrowserRouter([
   {
