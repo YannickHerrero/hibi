@@ -40,6 +40,18 @@ packages/    db, fsrs, japanese, types   (private @hibi/* workspaces)
 | Testing | Vitest | One config per package/app |
 | Node | 24 LTS | `.nvmrc` pins it |
 
+## Environment variables
+
+`.env` lives at the **monorepo root only**. Every app/package loads it from there:
+
+| Consumer | How |
+|---|---|
+| `apps/portal` (Vite) | `envDir: "../.."` in `vite.config.ts` — only `VITE_*` vars are exposed to client code |
+| `apps/api` (Node via `tsx`) | `tsx --env-file-if-exists=../../.env` in the dev script |
+| `packages/db` (drizzle-kit) | `process.loadEnvFile("../../.env")` at the top of `drizzle.config.ts`, wrapped in try/catch (CI/Vercel inject env directly) |
+
+Don't create per-app `.env` files. New env vars go into `.env.example` first with a description.
+
 ## Key tech choices
 
 - **API**: Hono + `@hono/zod-openapi` + `@scalar/hono-api-reference` mounted at `/docs`. Vercel entry at `apps/api/api/index.ts` exporting `default app` (Vercel Fluid Compute pattern).
