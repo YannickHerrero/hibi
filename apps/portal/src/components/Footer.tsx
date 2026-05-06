@@ -30,11 +30,7 @@ export function Footer() {
           >
             GitHub
           </a>
-          <a
-            className="meta"
-            href="https://api.hibi.app/docs"
-            style={{ textDecoration: "none" }}
-          >
+          <a className="meta" href="https://api.hibi.app/docs" style={{ textDecoration: "none" }}>
             API
           </a>
         </div>

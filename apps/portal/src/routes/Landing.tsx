@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "../lib/auth.tsx";
 import { SentenceCard } from "../components/extensions/SentenceCard.tsx";
+import { useAuth } from "../lib/auth.tsx";
 
 const SAMPLE_FURIGANA = [
   { base: "彼女", reading: "かのじょ" },
@@ -33,9 +33,8 @@ export function Landing() {
           className="serif"
           style={{ fontSize: 20, marginTop: 24, maxWidth: 640, color: "var(--ink)" }}
         >
-          Mine Japanese sentences while you watch. Review them anywhere. Hibi is a flashcard
-          backend with a small ecosystem of clients — built on FSRS, hosted on your own
-          infrastructure.
+          Mine Japanese sentences while you watch. Review them anywhere. Hibi is a flashcard backend
+          with a small ecosystem of clients — built on FSRS, hosted on your own infrastructure.
         </p>
         <div style={{ display: "flex", gap: 12, marginTop: 32, flexWrap: "wrap" }}>
           <Link
@@ -107,9 +106,8 @@ export function Landing() {
         </div>
         <p className="serif" style={{ fontSize: 18, maxWidth: 720 }}>
           FSRS replaces the SM-2 algorithm Anki has used for decades. It models stability and
-          difficulty per card, supports per-user parameter optimization, and predicts retention
-          with fewer reviews. Hibi runs the FSRS update server-side in a single transaction
-          per review.
+          difficulty per card, supports per-user parameter optimization, and predicts retention with
+          fewer reviews. Hibi runs the FSRS update server-side in a single transaction per review.
         </p>
         <div style={{ marginTop: 24, display: "flex", gap: 12, flexWrap: "wrap" }}>
           <a

@@ -1,4 +1,4 @@
-import { THEMES, THEME_SWATCHES, type ThemeName } from "../lib/theme.ts";
+import { THEME_SWATCHES, THEMES, type ThemeName } from "../lib/theme.ts";
 
 interface Props {
   theme: ThemeName;

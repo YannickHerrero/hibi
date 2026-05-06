@@ -90,8 +90,8 @@ export function ApiKeysSection() {
       </div>
 
       <p className="sans" style={{ color: "var(--ink-soft)", marginBottom: 16 }}>
-        Mining and review clients authenticate with an API key per device. Keys are hashed at
-        rest — the raw value is shown <strong>once</strong> at creation.
+        Mining and review clients authenticate with an API key per device. Keys are hashed at rest —
+        the raw value is shown <strong>once</strong> at creation.
       </p>
 
       {revealedKey && (
@@ -127,11 +127,7 @@ export function ApiKeysSection() {
             <button type="button" className="btn-primary" onClick={copyRaw}>
               Copy
             </button>
-            <button
-              type="button"
-              className="btn-ghost"
-              onClick={() => setRevealedKey(null)}
-            >
+            <button type="button" className="btn-ghost" onClick={() => setRevealedKey(null)}>
               I've saved it
             </button>
           </div>
