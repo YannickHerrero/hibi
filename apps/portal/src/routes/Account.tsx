@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { THEMES, THEME_SWATCHES, useTheme } from "../lib/theme.ts";
+import { ApiKeysSection } from "../components/ApiKeysSection.tsx";
 import { useAuth } from "../lib/auth.tsx";
 import { getSupabase } from "../lib/supabase.ts";
+import { THEMES, THEME_SWATCHES, useTheme } from "../lib/theme.ts";
 
 export function Account() {
   const { session } = useAuth();
@@ -107,6 +108,10 @@ export function Account() {
           );
         })}
       </div>
+
+      <div className="rule-soft" style={{ margin: "48px 0 24px" }} />
+
+      <ApiKeysSection />
 
       <div className="rule-soft" style={{ margin: "48px 0 24px" }} />
 
