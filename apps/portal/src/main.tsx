@@ -1,9 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { App } from "./App.tsx";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Layout } from "./components/Layout.tsx";
+import { RedirectIfAuthed, RequireAuth } from "./lib/auth.tsx";
 import { Account } from "./routes/Account.tsx";
-import { Keys } from "./routes/Keys.tsx";
+import { Landing } from "./routes/Landing.tsx";
 import { Login } from "./routes/Login.tsx";
 import { Stats } from "./routes/Stats.tsx";
 import "./styles/index.css";
@@ -11,13 +12,33 @@ import "./styles/index.css";
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: App,
+    Component: Layout,
     children: [
-      { index: true, Component: Account },
-      { path: "login", Component: Login },
-      { path: "account", Component: Account },
-      { path: "keys", Component: Keys },
-      { path: "stats", Component: Stats },
+      { index: true, Component: Landing },
+      {
+        path: "login",
+        element: (
+          <RedirectIfAuthed>
+            <Login />
+          </RedirectIfAuthed>
+        ),
+      },
+      {
+        path: "stats",
+        element: (
+          <RequireAuth>
+            <Stats />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: "account",
+        element: (
+          <RequireAuth>
+            <Account />
+          </RequireAuth>
+        ),
+      },
     ],
   },
 ]);
