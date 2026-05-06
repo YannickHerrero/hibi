@@ -47,8 +47,10 @@ packages/    db, fsrs, japanese, types   (private @hibi/* workspaces)
 | Consumer | How |
 |---|---|
 | `apps/portal` (Vite) | `envDir: "../.."` in `vite.config.ts` — only `VITE_*` vars are exposed to client code |
-| `apps/api` (Node via `tsx`) | `tsx --env-file-if-exists=../../.env` in the dev script |
-| `packages/db` (drizzle-kit) | `process.loadEnvFile("../../.env")` at the top of `drizzle.config.ts`, wrapped in try/catch (CI/Vercel inject env directly) |
+| `apps/api` (Node via `tsx`) | `process.loadEnvFile(new URL("../../../.env", import.meta.url))` at the top of `src/env.ts`, wrapped in try/catch |
+| `packages/db` (drizzle-kit) | Same pattern in `drizzle.config.ts` |
+
+Why not `NODE_OPTIONS='--env-file=...'` or `tsx --env-file=...`? Node intentionally blocks `--env-file` in `NODE_OPTIONS` (env injection vector), and tsx swallows the flag without forwarding to Node. `process.loadEnvFile()` (Node 21+) is the clean substitute — works regardless of cwd because the path is resolved against `import.meta.url`.
 
 Don't create per-app `.env` files. New env vars go into `.env.example` first with a description.
 
