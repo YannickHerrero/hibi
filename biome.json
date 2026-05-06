@@ -57,7 +57,7 @@
   },
   "overrides": [
     {
-      "includes": ["apps/design/src/**"],
+      "includes": ["apps/design/src/**", "apps/portal/src/components/extensions/**"],
       "linter": {
         "rules": {
           "suspicious": {
