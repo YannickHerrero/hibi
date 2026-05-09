@@ -18,5 +18,11 @@ export type {
   SubmitReviewResult,
   UpdateCardInput,
 } from "@hibi/types";
-export type { HibiClient, HibiClientConfig, HibiClientError } from "./client.ts";
+export type {
+  AudioUploadInput,
+  HibiClient,
+  HibiClientConfig,
+  HibiClientError,
+  RNFileRef,
+} from "./client.ts";
 export { createHibiClient } from "./client.ts";

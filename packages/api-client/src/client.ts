@@ -34,6 +34,17 @@ const DueResponseSchema = z.object({
     z.object({ card: CardSchema, cardState: SubmitReviewResultSchema.shape.cardState }),
   ),
 });
+const UploadAudioResponseSchema = z.object({ key: z.string() });
+
+// React-Native-style file reference. RN's FormData.append accepts this
+// shape directly; we type it explicitly so consumers can build it
+// without depending on RN-specific globals.
+export type RNFileRef = { uri: string; name: string; type: string };
+
+// What client.uploads.audio() accepts. On web pass a Blob/File; on RN
+// pass an RNFileRef. In both cases the SDK builds the multipart body.
+export type AudioUploadInput = Blob | RNFileRef;
+
 function asError(status: number, body: unknown): HibiClientError {
   const err = new Error(`Hibi API error: ${status}`) as HibiClientError;
   err.status = status;
@@ -91,6 +102,20 @@ export function createHibiClient(config: HibiClientConfig) {
     return schema.parse(body);
   }
 
+  function buildAudioForm(input: AudioUploadInput): FormData {
+    const fd = new FormData();
+    if (typeof Blob !== "undefined" && input instanceof Blob) {
+      // Blob/File on web/node20+. Pass a name so the server sees a filename.
+      const name = "name" in input && typeof input.name === "string" ? input.name : "clip.m4a";
+      fd.append("file", input, name);
+    } else {
+      // RN file ref. The cast is unavoidable: RN's FormData accepts this
+      // shape but the lib.dom.d.ts FormData type doesn't model it.
+      fd.append("file", input as unknown as Blob);
+    }
+    return fd;
+  }
+
   return {
     cards: {
       async create(input: CreateCardInput) {
@@ -111,6 +136,14 @@ export function createHibiClient(config: HibiClientConfig) {
       },
       async remove(id: string): Promise<void> {
         await request("DELETE", `/v1/cards/${id}`, z.unknown());
+      },
+    },
+
+    uploads: {
+      async audio(input: AudioUploadInput) {
+        return request("POST", "/v1/uploads/audio", UploadAudioResponseSchema, {
+          body: buildAudioForm(input),
+        });
       },
     },
 
