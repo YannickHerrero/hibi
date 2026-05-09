@@ -1,3 +1,4 @@
+import { z } from "zod";
 import {
   CardSchema,
   type CreateCardInput,
@@ -15,7 +16,6 @@ import {
   type UpdateCardInput,
   UpdateCardInputSchema,
 } from "./_vendored/hibi-types/index.ts";
-import { z } from "zod";
 
 export interface HibiClientConfig {
   apiKey: string;
