@@ -49,6 +49,3 @@ coverage/
 tmp/
 temp/
 *.tmp
-
-# Drizzle
-drizzle/meta/
