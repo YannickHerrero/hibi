@@ -56,7 +56,7 @@ Don't create per-app `.env` files. New env vars go into `.env.example` first wit
 
 ## Key tech choices
 
-- **API**: Hono + `@hono/zod-openapi` + `@scalar/hono-api-reference` mounted at `/docs`. Vercel entry at `apps/api/api/index.ts` exporting `default app` (Vercel Fluid Compute pattern).
+- **API**: Hono + `@hono/zod-openapi` + `@scalar/hono-api-reference` mounted at `/docs`. Vercel entry at `apps/api/index.ts` exporting `default app` — single top-level entrypoint that Vercel's auto-detector turns into one Function handling all paths. Do not move it under an `api/` subfolder (legacy pattern, breaks detection when Root Directory is `apps/api`).
 - **DB**: Supabase Postgres via Drizzle ORM (`postgres-js` driver). Migrations live in `packages/db/drizzle/`.
 - **Auth**: Supabase Auth, **email OTP only** — no passwords, no OAuth, no magic links. Clients (Kiseki/Horu/Tsumu) use API keys (`Authorization: Bearer <key>`).
 - **Scheduler**: `ts-fsrs`. Wrapped behind `@hibi/fsrs.schedule(state, rating, now)`.

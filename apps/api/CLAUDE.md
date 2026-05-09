@@ -6,11 +6,14 @@ Hono API for Hibi. Deploys to Vercel as a Fluid Compute Function.
 
 - `src/app.ts` — Hono app composition (middleware, routes, OpenAPI, Scalar)
 - `src/server.ts` — local dev server via `@hono/node-server`
-- `api/index.ts` — Vercel function entry; `export default app`
+- `index.ts` — Vercel function entry; `export default app`
+
+Vercel's auto-detector (with Root Directory = `apps/api`) picks up a single top-level `index.ts` exporting a fetch-handler-compatible app and routes all paths to it. Don't move the entry back into a `api/` subfolder — that's the legacy multi-function pattern and the detector won't find it.
 
 ## Layout
 
 ```
+index.ts             // Vercel default export
 src/
   app.ts             // composed Hono app
   server.ts          // local dev (tsx watch)
@@ -24,8 +27,6 @@ src/
     supabase-auth.ts // Bearer <jwt> -> userId via Supabase service-role
   routes/
     cards.ts, reviews.ts, stats.ts, account.ts
-api/
-  index.ts           // Vercel default export
 ```
 
 ## Auth split
