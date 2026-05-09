@@ -146,6 +146,11 @@ export function createHibiClient(config: HibiClientConfig) {
           body: buildUploadForm(input, "clip.m4a"),
         });
       },
+      async image(input: UploadInput) {
+        return request("POST", "/v1/uploads/image", UploadResponseSchema, {
+          body: buildUploadForm(input, "image.jpg"),
+        });
+      },
     },
 
     reviews: {
