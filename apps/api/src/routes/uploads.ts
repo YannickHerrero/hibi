@@ -9,6 +9,7 @@ const uploadsApp = new OpenAPIHono<{ Variables: { auth: ApiKeyContext } }>();
 uploadsApp.use("*", apiKeyAuth);
 
 const MAX_AUDIO_BYTES = 5 * 1024 * 1024;
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 
 const ALLOWED_AUDIO_MIME = new Set([
   "audio/mp4",
@@ -17,6 +18,13 @@ const ALLOWED_AUDIO_MIME = new Set([
   "audio/aac",
   "audio/mpeg",
   "audio/ogg",
+]);
+
+const ALLOWED_IMAGE_MIME = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
 ]);
 
 // z.any() so the multipart File passes through; the .openapi() override
@@ -62,6 +70,43 @@ uploadsApp.openapi(
   },
 );
 
+uploadsApp.openapi(
+  createRoute({
+    method: "post",
+    path: "/image",
+    summary: "Upload image",
+    description: "Uploads an image (jpeg/png/webp/gif, max 10 MB) to the media bucket.",
+    request: {
+      body: {
+        content: { "multipart/form-data": { schema: UploadFormSchema } },
+        required: true,
+      },
+    },
+    responses: {
+      201: {
+        content: { "application/json": { schema: UploadResponseSchema } },
+        description: "Upload created",
+      },
+    },
+  }),
+  async (c) => {
+    const file = await readFile(c);
+    if (file.size > MAX_IMAGE_BYTES) {
+      throw badRequest(`file exceeds ${MAX_IMAGE_BYTES / 1024 / 1024} MB`);
+    }
+    const contentType = file.type || "image/jpeg";
+    if (!ALLOWED_IMAGE_MIME.has(contentType)) {
+      throw badRequest(`unsupported image mime: ${contentType}`);
+    }
+
+    const { userId } = c.get("auth");
+    const path = `images/${userId}/${crypto.randomUUID()}${pickImageExt(contentType)}`;
+    const buf = await file.arrayBuffer();
+    const { key } = await uploadMedia(path, buf, contentType);
+    return c.json({ key }, 201);
+  },
+);
+
 async function readFile(c: Context): Promise<File> {
   const body = await c.req.parseBody();
   const file = body.file;
@@ -76,6 +121,13 @@ function pickAudioExt(mime: string): string {
   if (mime === "audio/ogg") return ".ogg";
   if (mime === "audio/aac") return ".aac";
   return ".m4a";
+}
+
+function pickImageExt(mime: string): string {
+  if (mime === "image/png") return ".png";
+  if (mime === "image/webp") return ".webp";
+  if (mime === "image/gif") return ".gif";
+  return ".jpg";
 }
 
 export { uploadsApp };
