@@ -34,12 +34,15 @@ const DueResponseSchema = z.object({
     z.object({ card: CardSchema, cardState: SubmitReviewResultSchema.shape.cardState }),
   ),
 });
-
 function asError(status: number, body: unknown): HibiClientError {
   const err = new Error(`Hibi API error: ${status}`) as HibiClientError;
   err.status = status;
   err.body = body;
   return err;
+}
+
+function isFormData(value: unknown): value is FormData {
+  return typeof FormData !== "undefined" && value instanceof FormData;
 }
 
 export function createHibiClient(config: HibiClientConfig) {
@@ -50,7 +53,10 @@ export function createHibiClient(config: HibiClientConfig) {
     method: string,
     path: string,
     schema: z.ZodType<T>,
-    init: { body?: unknown; query?: Record<string, string | number | undefined> } = {},
+    init: {
+      body?: unknown;
+      query?: Record<string, string | number | undefined>;
+    } = {},
   ): Promise<T> {
     const url = new URL(`${base}${path}`);
     if (init.query) {
@@ -64,8 +70,14 @@ export function createHibiClient(config: HibiClientConfig) {
     };
     const requestInit: RequestInit = { method, headers };
     if (init.body !== undefined) {
-      headers["Content-Type"] = "application/json";
-      requestInit.body = JSON.stringify(init.body);
+      if (isFormData(init.body)) {
+        // Don't set Content-Type for multipart — the runtime appends
+        // the correct boundary. RN in particular breaks if we set it.
+        requestInit.body = init.body;
+      } else {
+        headers["Content-Type"] = "application/json";
+        requestInit.body = JSON.stringify(init.body);
+      }
     }
 
     const res = await fetchImpl(url.toString(), requestInit);
