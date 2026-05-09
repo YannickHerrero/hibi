@@ -17,7 +17,7 @@ export type {
   SubmitReviewInput,
   SubmitReviewResult,
   UpdateCardInput,
-} from "@hibi/types";
+} from "./_vendored/hibi-types/index.ts";
 export type {
   AudioUploadInput,
   HibiClient,

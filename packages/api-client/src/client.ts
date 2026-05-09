@@ -14,7 +14,7 @@ import {
   SubmitReviewResultSchema,
   type UpdateCardInput,
   UpdateCardInputSchema,
-} from "@hibi/types";
+} from "./_vendored/hibi-types/index.ts";
 import { z } from "zod";
 
 export interface HibiClientConfig {

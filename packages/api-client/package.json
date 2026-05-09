@@ -46,7 +46,6 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@hibi/types": "workspace:*",
     "zod": "4.4.3"
   },
   "devDependencies": {
