@@ -46,8 +46,8 @@ export type RNFileRef = { uri: string; name: string; type: string };
 export type UploadInput = Blob | RNFileRef;
 export type AudioUploadInput = UploadInput;
 
-function asError(status: number, body: unknown): HibiClientError {
-  const err = new Error(`Hibi API error: ${status}`) as HibiClientError;
+function asError(status: number, body: unknown, message?: string): HibiClientError {
+  const err = new Error(message ?? `Hibi API error: ${status}`) as HibiClientError;
   err.status = status;
   err.body = body;
   return err;
@@ -97,7 +97,30 @@ export function createHibiClient(config: HibiClientConfig) {
     if (res.status === 204) return undefined as T;
 
     const text = await res.text();
-    const body = text ? JSON.parse(text) : null;
+    const contentType = res.headers.get("content-type") ?? "";
+    let body: unknown = null;
+    if (text) {
+      if (contentType.includes("application/json")) {
+        try {
+          body = JSON.parse(text);
+        } catch (err) {
+          throw asError(
+            res.status,
+            { rawText: text.slice(0, 500), parseError: String(err) },
+            `Hibi API ${res.status}: malformed JSON from ${url.toString()} (first 200 chars: ${text.slice(0, 200)})`,
+          );
+        }
+      } else {
+        // Non-JSON response — almost always means we hit a misrouted host
+        // (Vercel 404 wall, gateway HTML, captive portal). Surface the
+        // first chunk of the body so the caller knows where to look.
+        throw asError(
+          res.status,
+          { rawText: text.slice(0, 500), contentType },
+          `Hibi API ${res.status}: expected JSON from ${url.toString()} but got ${contentType || "unknown content-type"} (first 200 chars: ${text.slice(0, 200)})`,
+        );
+      }
+    }
 
     if (!res.ok) throw asError(res.status, body);
     return schema.parse(body);
