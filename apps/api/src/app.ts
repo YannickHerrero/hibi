@@ -10,6 +10,7 @@ import { reviewsApp } from "./routes/reviews.ts";
 import { sessionsApp } from "./routes/sessions.ts";
 import { statsApp } from "./routes/stats.ts";
 import { uploadsApp } from "./routes/uploads.ts";
+import { wordStatusApp } from "./routes/word-status.ts";
 
 const app = new OpenAPIHono();
 
@@ -45,6 +46,8 @@ app.route("/v1/stats", statsApp);
 app.route("/v1/account", accountApp);
 app.route("/v1/sessions", sessionsApp);
 app.route("/v1/uploads", uploadsApp);
+// word-status app mounts both /v1/word-status and /v1/known-words.
+app.route("/v1", wordStatusApp);
 
 app.doc("/openapi.json", {
   openapi: "3.1.0",
