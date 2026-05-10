@@ -7,6 +7,7 @@ import { getEnv } from "./env.ts";
 import { accountApp } from "./routes/account.ts";
 import { cardsApp } from "./routes/cards.ts";
 import { reviewsApp } from "./routes/reviews.ts";
+import { sessionsApp } from "./routes/sessions.ts";
 import { statsApp } from "./routes/stats.ts";
 import { uploadsApp } from "./routes/uploads.ts";
 
@@ -42,6 +43,7 @@ app.route("/v1/cards", cardsApp);
 app.route("/v1/reviews", reviewsApp);
 app.route("/v1/stats", statsApp);
 app.route("/v1/account", accountApp);
+app.route("/v1/sessions", sessionsApp);
 app.route("/v1/uploads", uploadsApp);
 
 app.doc("/openapi.json", {
