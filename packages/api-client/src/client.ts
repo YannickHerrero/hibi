@@ -10,6 +10,11 @@ import {
   type ListCardsQuery,
   PaginatedSchema,
   RetentionResponseSchema,
+  CreateSessionInputSchema,
+  type CreateSessionInput,
+  ListSessionsQuerySchema,
+  type ListSessionsQuery,
+  SessionSchema,
   type SubmitReviewInput,
   SubmitReviewInputSchema,
   SubmitReviewResultSchema,
@@ -29,6 +34,7 @@ export interface HibiClientError extends Error {
 }
 
 const PaginatedCardSchema = PaginatedSchema(CardSchema);
+const PaginatedSessionSchema = PaginatedSchema(SessionSchema);
 const DueResponseSchema = z.object({
   items: z.array(
     z.object({ card: CardSchema, cardState: SubmitReviewResultSchema.shape.cardState }),
@@ -172,6 +178,26 @@ export function createHibiClient(config: HibiClientConfig) {
       async image(input: UploadInput) {
         return request("POST", "/v1/uploads/image", UploadResponseSchema, {
           body: buildUploadForm(input, "image.jpg"),
+        });
+      },
+    },
+
+    sessions: {
+      async create(input: CreateSessionInput) {
+        const validated = CreateSessionInputSchema.parse(input);
+        return request("POST", "/v1/sessions", SessionSchema, { body: validated });
+      },
+      async list(query: ListSessionsQuery = { limit: 50 }) {
+        const validated = ListSessionsQuerySchema.parse(query);
+        return request("GET", "/v1/sessions", PaginatedSessionSchema, {
+          query: {
+            limit: validated.limit,
+            cursor: validated.cursor,
+            kind: validated.kind,
+            source: validated.source,
+            from: validated.from,
+            to: validated.to,
+          },
         });
       },
     },
