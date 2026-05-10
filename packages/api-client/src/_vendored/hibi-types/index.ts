@@ -4,3 +4,4 @@ export * from "./common.ts";
 export * from "./reviews.ts";
 export * from "./sessions.ts";
 export * from "./stats.ts";
+export * from "./word-status.ts";

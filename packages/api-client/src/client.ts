@@ -7,11 +7,16 @@ import {
   DailyCountResponseSchema,
   type HeatmapQuery,
   HeatmapResponseSchema,
+  KnownWordSchema,
   type ListCardsQuery,
+  ManualWordStatusSchema,
   PaginatedSchema,
+  type PaginationQuery,
   RetentionResponseSchema,
   CreateSessionInputSchema,
   type CreateSessionInput,
+  type SetWordStatusInput,
+  SetWordStatusInputSchema,
   ListSessionsQuerySchema,
   type ListSessionsQuery,
   SessionSchema,
@@ -35,6 +40,9 @@ export interface HibiClientError extends Error {
 
 const PaginatedCardSchema = PaginatedSchema(CardSchema);
 const PaginatedSessionSchema = PaginatedSchema(SessionSchema);
+const PaginatedManualStatusSchema = PaginatedSchema(ManualWordStatusSchema);
+const PaginatedKnownWordSchema = PaginatedSchema(KnownWordSchema);
+const NullableManualStatusSchema = ManualWordStatusSchema.nullable();
 const DueResponseSchema = z.object({
   items: z.array(
     z.object({ card: CardSchema, cardState: SubmitReviewResultSchema.shape.cardState }),
@@ -211,6 +219,32 @@ export function createHibiClient(config: HibiClientConfig) {
       async submit(input: SubmitReviewInput) {
         const validated = SubmitReviewInputSchema.parse(input);
         return request("POST", "/v1/reviews", SubmitReviewResultSchema, { body: validated });
+      },
+    },
+
+    wordStatus: {
+      // Upsert (lemma, reading) for the caller; pass status: null to delete.
+      async set(input: SetWordStatusInput) {
+        const validated = SetWordStatusInputSchema.parse(input);
+        return request("PUT", "/v1/word-status", NullableManualStatusSchema, {
+          body: validated,
+        });
+      },
+      // Paginated list of just the manual rows (no SRS rows).
+      async list(query: PaginationQuery = { limit: 50 }) {
+        return request("GET", "/v1/word-status", PaginatedManualStatusSchema, {
+          query: { limit: query.limit, cursor: query.cursor },
+        });
+      },
+    },
+
+    knownWords: {
+      // Merged manual + SRS classifications. Single source of truth for
+      // the underline-by-status view in reading clients.
+      async list(query: PaginationQuery = { limit: 50 }) {
+        return request("GET", "/v1/known-words", PaginatedKnownWordSchema, {
+          query: { limit: query.limit, cursor: query.cursor },
+        });
       },
     },
 
