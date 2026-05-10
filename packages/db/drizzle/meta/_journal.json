@@ -8,6 +8,13 @@
       "when": 1778317095749,
       "tag": "0000_cooing_sentinel",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778414280033,
+      "tag": "0001_lonely_stepford_cuckoos",
+      "breakpoints": true
     }
   ]
 }
