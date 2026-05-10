@@ -8,6 +8,10 @@ description: The hibi-client package and how to use it.
 - `client.cards.*` — create, list, update, delete cards
 - `client.reviews.*` — query due cards, submit reviews
 - `client.stats.*` — heatmap, retention, daily counts
+- `client.sessions.*` — record and list passive-immersion sessions
+- `client.wordStatus.*` — set per-word manual status (`learning`/`known`/`ignored`)
+- `client.knownWords.*` — read the merged manual + SRS-derived classification view
+- `client.uploads.*` — upload audio / image clips
 - `client.account.*` — current account info, manage keys (portal contexts only)
 
 The client uses runtime Zod validation against `@hibi/types` so you can trust the shapes that come back, even at the boundary.

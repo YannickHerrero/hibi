@@ -1,0 +1,97 @@
+---
+title: Word status & known words
+description: Per-user word classifications (manual + SRS-derived) and the merged known-words view used by reading clients.
+---
+
+The word-status surface lets a client track the user's relationship with a Japanese word independently from the SRS card. It powers features like fading the dictionary underline once a word is known.
+
+There are two related namespaces on the client:
+
+- `client.wordStatus.*` — read/write the **manual** classifications (the user explicitly marked a word as `learning`, `known`, or `ignored`).
+- `client.knownWords.*` — read the **merged** view: manual rows union'd with classifications derived from the user's SRS cards.
+
+## Status values
+
+```ts
+type WordStatus = "learning" | "known" | "ignored";
+```
+
+`unknown` is the implicit default — the absence of a row. There is no fourth value to write; pass `status: null` to clear a manual row.
+
+## Word identity
+
+Status is keyed by **(lemma, reading)** so inflected forms (食べた, 食べて) collapse onto the same canonical entry (食べる/たべる). Both fields are required and must be non-empty.
+
+## Manual classifications
+
+```ts
+// Mark a word as 'learning'.
+await client.wordStatus.set({
+  lemma: "食べる",
+  reading: "たべる",
+  status: "learning",
+});
+
+// Cycle to 'known'.
+await client.wordStatus.set({
+  lemma: "食べる",
+  reading: "たべる",
+  status: "known",
+});
+
+// Clear it.
+await client.wordStatus.set({
+  lemma: "食べる",
+  reading: "たべる",
+  status: null,
+});
+
+// Paginate manual rows.
+const { items, nextCursor } = await client.wordStatus.list({ limit: 100 });
+```
+
+`set` upserts on `(userId, lemma, reading)`. The response is the upserted row, or `null` when `status: null` deleted it.
+
+## SRS-derived classifications
+
+These come from the user's existing cards and **cannot be overridden manually** — the truth is the SRS state.
+
+| Card state                              | Derived status |
+| --------------------------------------- | -------------- |
+| `state = 'review'` and `scheduledDays > 14` | `known`     |
+| Any other card with a card_state row    | `learning`     |
+
+`focus_word` and `focus_word_reading` on the card are treated as the lemma+reading for matching.
+
+## The merged view
+
+```ts
+const { items } = await client.knownWords.list({ limit: 200 });
+items.forEach((kw) => {
+  console.log(kw.lemma, kw.reading, kw.status, kw.source, kw.intervalDays);
+});
+```
+
+Each item:
+
+```ts
+type KnownWord = {
+  lemma: string;
+  reading: string;
+  status: "learning" | "known" | "ignored";
+  source: "manual" | "srs";       // where the classification came from
+  cardId: string | null;          // populated when source === 'srs'
+  intervalDays: number | null;    // SRS scheduledDays, when source === 'srs'
+  updatedAt: string;
+};
+```
+
+When the same `(lemma, reading)` exists in both manual and SRS sets, **SRS wins**. UIs should render that row as read-only and tell the user to adjust by reviewing the card.
+
+## Suggested refresh cadence
+
+`knownWords.list` is the canonical view; cache it locally and refresh:
+
+- once at app start, after auth is ready,
+- on app foreground (debounced — every few minutes is plenty),
+- immediately after `client.cards.create` so a freshly-saved card shows up in the list.
