@@ -4,3 +4,4 @@ export * from "./cards.ts";
 export * from "./clients.ts";
 export * from "./reviews.ts";
 export * from "./sessions.ts";
+export * from "./word-statuses.ts";
