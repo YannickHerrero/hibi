@@ -9,7 +9,7 @@ import {
   UUIDSchema,
 } from "@hibi/types";
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { and, arrayContains, desc, eq, lt } from "drizzle-orm";
+import { and, arrayContains, desc, eq, ilike, lt, or } from "drizzle-orm";
 import { getDb } from "../db.ts";
 import { notFound } from "../lib/errors.ts";
 import { apiKeyAuth } from "../middleware/api-key.ts";
@@ -85,7 +85,7 @@ cardsApp.openapi(
     },
   }),
   async (c) => {
-    const { limit, cursor, tag, source } = c.req.valid("query");
+    const { limit, cursor, tag, source, q } = c.req.valid("query");
     const { userId } = c.get("auth");
     const db = getDb();
 
@@ -95,6 +95,7 @@ cardsApp.openapi(
       cursorDate ? lt(cards.createdAt, cursorDate) : undefined,
       tag ? arrayContains(cards.tags, [tag]) : undefined,
       source ? eq(cards.source, source) : undefined,
+      q ? or(ilike(cards.sentence, `%${q}%`), ilike(cards.focusWord, `%${q}%`)) : undefined,
     );
 
     const rows = await db
