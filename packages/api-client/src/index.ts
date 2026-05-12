@@ -10,6 +10,7 @@ export type {
   HeatmapResponse,
   KanjiEntry,
   ListCardsQuery,
+  ListCardsSort,
   RetentionPoint,
   RetentionResponse,
   Review,

@@ -160,9 +160,16 @@ export function createHibiClient(config: HibiClientConfig) {
         const validated = CreateCardInputSchema.parse(input);
         return request("POST", "/v1/cards", CardSchema, { body: validated });
       },
-      async list(query: ListCardsQuery = { limit: 50 }) {
+      async list(query: ListCardsQuery = { limit: 50, sort: "newest" }) {
         return request("GET", "/v1/cards", PaginatedCardSchema, {
-          query: { limit: query.limit, cursor: query.cursor, tag: query.tag, source: query.source },
+          query: {
+            limit: query.limit,
+            cursor: query.cursor,
+            tag: query.tag,
+            source: query.source,
+            q: query.q,
+            sort: query.sort,
+          },
         });
       },
       async get(id: string) {
