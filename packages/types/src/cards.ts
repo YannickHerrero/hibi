@@ -31,6 +31,8 @@ export const CardSchema = z.object({
 
   imageKey: z.string().nullable(),
   audioKey: z.string().nullable(),
+  imageUrl: z.string().url().nullable(),
+  audioUrl: z.string().url().nullable(),
 
   source: z.string(),
   tags: z.array(z.string()),
@@ -42,6 +44,8 @@ export const CreateCardInputSchema = CardSchema.omit({
   userId: true,
   createdAt: true,
   updatedAt: true,
+  imageUrl: true,
+  audioUrl: true,
 });
 export type CreateCardInput = z.infer<typeof CreateCardInputSchema>;
 

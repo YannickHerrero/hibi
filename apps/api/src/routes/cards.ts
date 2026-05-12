@@ -197,6 +197,8 @@ function serializeCard(row: typeof cards.$inferSelect) {
     ...row,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
+    imageUrl: null,
+    audioUrl: null,
   };
 }
 
