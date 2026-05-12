@@ -10,6 +10,7 @@ import {
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { and, asc, eq, lte } from "drizzle-orm";
 import { getDb } from "../db.ts";
+import { serializeCardsWithUrls } from "../lib/cards.ts";
 import { notFound } from "../lib/errors.ts";
 import { apiKeyAuth } from "../middleware/api-key.ts";
 
@@ -49,10 +50,12 @@ reviewsApp.openapi(
       .orderBy(asc(cardStates.due))
       .limit(limit);
 
-    const items = rows.map((r) => ({
-      card: serializeCard(r.card),
-      cardState: serializeCardState(r.cardState),
-    }));
+    const serializedCards = await serializeCardsWithUrls(rows.map((r) => r.card));
+    const items = rows.map((r, i) => {
+      const card = serializedCards[i];
+      if (!card) throw new Error("card serialization mismatch");
+      return { card, cardState: serializeCardState(r.cardState) };
+    });
     return c.json({ items }, 200);
   },
 );
@@ -148,16 +151,6 @@ reviewsApp.openapi(
     );
   },
 );
-
-function serializeCard(row: typeof cards.$inferSelect) {
-  return {
-    ...row,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-    imageUrl: null,
-    audioUrl: null,
-  };
-}
 
 function serializeCardState(row: typeof cardStates.$inferSelect) {
   return {

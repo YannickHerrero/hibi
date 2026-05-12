@@ -12,6 +12,7 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import type { SQL } from "drizzle-orm";
 import { and, arrayContains, asc, desc, eq, gt, ilike, lt, or } from "drizzle-orm";
 import { getDb } from "../db.ts";
+import { serializeCardsWithUrls, serializeCardWithUrls } from "../lib/cards.ts";
 import { notFound } from "../lib/errors.ts";
 import { apiKeyAuth } from "../middleware/api-key.ts";
 
@@ -69,7 +70,7 @@ cardsApp.openapi(
       return row;
     });
 
-    return c.json(serializeCard(card), 201);
+    return c.json(await serializeCardWithUrls(card), 201);
   },
 );
 
@@ -152,7 +153,7 @@ cardsApp.openapi(
       }
     }
 
-    return c.json({ items: items.map(serializeCard), nextCursor }, 200);
+    return c.json({ items: await serializeCardsWithUrls(items), nextCursor }, 200);
   },
 );
 
@@ -180,7 +181,7 @@ cardsApp.openapi(
       .limit(1);
 
     if (!row) throw notFound();
-    return c.json(serializeCard(row), 200);
+    return c.json(await serializeCardWithUrls(row), 200);
   },
 );
 
@@ -212,7 +213,7 @@ cardsApp.openapi(
       .returning();
 
     if (!row) throw notFound();
-    return c.json(serializeCard(row), 200);
+    return c.json(await serializeCardWithUrls(row), 200);
   },
 );
 
@@ -237,15 +238,5 @@ cardsApp.openapi(
     return c.body(null, 204);
   },
 );
-
-function serializeCard(row: typeof cards.$inferSelect) {
-  return {
-    ...row,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-    imageUrl: null,
-    audioUrl: null,
-  };
-}
 
 export { cardsApp };

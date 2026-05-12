@@ -45,3 +45,23 @@ export async function signedMediaUrl(key: string, expiresInSec = 3600): Promise<
   if (error || !data) throw new Error(`signed url failed: ${error?.message ?? "unknown"}`);
   return data.signedUrl;
 }
+
+// Bulk variant: signs many keys in a single round-trip and returns a
+// path → signedUrl map. Keys missing from the result map either failed
+// to sign (not found, etc.) and should be treated as null by callers.
+export async function signedMediaUrls(
+  keys: string[],
+  expiresInSec = 3600,
+): Promise<Map<string, string>> {
+  if (keys.length === 0) return new Map();
+  const client = getStorageClient();
+  const { data, error } = await client.storage
+    .from(MEDIA_BUCKET)
+    .createSignedUrls(keys, expiresInSec);
+  if (error || !data) throw new Error(`signed urls failed: ${error?.message ?? "unknown"}`);
+  const map = new Map<string, string>();
+  for (const item of data) {
+    if (item.path && item.signedUrl) map.set(item.path, item.signedUrl);
+  }
+  return map;
+}
