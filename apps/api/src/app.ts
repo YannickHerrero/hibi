@@ -19,7 +19,8 @@ app.use("*", logger());
 app.use("*", async (c, next) => {
   const env = getEnv();
   return cors({
-    origin: env.NODE_ENV === "development" ? "*" : env.PORTAL_URL,
+    origin:
+      env.NODE_ENV === "development" ? "*" : [env.PORTAL_URL, env.KIOKU_URL],
     credentials: true,
   })(c, next);
 });
