@@ -48,10 +48,15 @@ export type CreateCardInput = z.infer<typeof CreateCardInputSchema>;
 export const UpdateCardInputSchema = CreateCardInputSchema.partial();
 export type UpdateCardInput = z.infer<typeof UpdateCardInputSchema>;
 
+export const ListCardsSortSchema = z.enum(["newest", "oldest", "due-soonest"]);
+export type ListCardsSort = z.infer<typeof ListCardsSortSchema>;
+
 export const ListCardsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
   cursor: z.string().optional(),
   tag: z.string().optional(),
   source: z.string().optional(),
+  q: z.string().min(1).max(200).optional(),
+  sort: ListCardsSortSchema.default("newest"),
 });
 export type ListCardsQuery = z.infer<typeof ListCardsQuerySchema>;
