@@ -4,6 +4,8 @@ import {
   ApiKeySchema,
   CreateApiKeyInputSchema,
   CreateApiKeyResponseSchema,
+  HeatmapQuerySchema,
+  HeatmapResponseSchema,
   UUIDSchema,
 } from "@hibi/types";
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
@@ -12,6 +14,7 @@ import { getDb } from "../db.ts";
 import { generateApiKey, hashApiKey } from "../lib/crypto.ts";
 import { notFound } from "../lib/errors.ts";
 import { supabaseAuth } from "../middleware/supabase-auth.ts";
+import { heatmapByYear } from "../services/stats.ts";
 
 const accountApp = new OpenAPIHono<{
   Variables: { auth: { userId: string; email: string } };
@@ -145,6 +148,25 @@ accountApp.openapi(
 
     if (!row) throw notFound();
     return c.body(null, 204);
+  },
+);
+
+accountApp.openapi(
+  createRoute({
+    method: "get",
+    path: "/stats/heatmap",
+    request: { query: HeatmapQuerySchema },
+    responses: {
+      200: {
+        content: { "application/json": { schema: HeatmapResponseSchema } },
+        description: "Yearly review heatmap",
+      },
+    },
+  }),
+  async (c) => {
+    const { year } = c.req.valid("query");
+    const { userId } = c.get("auth");
+    return c.json(await heatmapByYear(getDb(), userId, year), 200);
   },
 );
 
