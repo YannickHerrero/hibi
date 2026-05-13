@@ -8,7 +8,7 @@ Currently a scaffold — placeholder routes only. Real implementation lands in a
 - Email-OTP login (Supabase Auth)
 - Account info screen
 - API key management UI (uses `/v1/account/keys`)
-- Stats dashboard (uses `/v1/stats/*`)
+- Stats dashboard (uses `/v1/account/stats/*` — portal-only JWT-authed mirror of `/v1/stats/*`)
 
 ## Layout
 
@@ -25,7 +25,8 @@ src/
 - Visual reference: `apps/design/`. Read CSS tokens from there or import `@hibi/types`-validated shapes.
 - Use the **Supabase JS client** for auth flows (OTP `signInWithOtp`, `verifyOtp`).
 - Once the portal has a Supabase session, hit `/v1/account/keys` with the JWT to manage keys.
-- Cards/reviews/stats calls go through the API-key path or via `hibi-client`.
+- Cards/reviews calls go through the API-key path or via `hibi-client`.
+- Stats calls go to `/v1/account/stats/*` (Supabase JWT). The `/v1/stats/*` mirror exists for clients and uses API-key auth — don't call it from the portal.
 
 ## Dev
 

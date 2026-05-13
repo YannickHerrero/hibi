@@ -27,12 +27,14 @@ src/
     supabase-auth.ts // Bearer <jwt> -> userId via Supabase service-role
   routes/
     cards.ts, reviews.ts, stats.ts, account.ts
+  services/
+    stats.ts           // shared SQL helpers used by both /v1/stats/* and /v1/account/stats/*
 ```
 
 ## Auth split
 
 - `/v1/cards`, `/v1/reviews`, `/v1/stats` use **API key** auth (clients).
-- `/v1/account/*` uses **Supabase JWT** auth (portal only).
+- `/v1/account/*` uses **Supabase JWT** auth (portal only). `/v1/account/stats/*` mirrors the API-key `/v1/stats/*` surface so the portal can read its own stats over a JWT — shared SQL lives in `services/stats.ts`.
 - Don't mix the two on the same route.
 
 ## Common gotchas
