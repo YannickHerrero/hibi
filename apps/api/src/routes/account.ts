@@ -8,6 +8,7 @@ import {
   DailyCountResponseSchema,
   HeatmapQuerySchema,
   HeatmapResponseSchema,
+  OverviewResponseSchema,
   RetentionResponseSchema,
   UUIDSchema,
 } from "@hibi/types";
@@ -17,7 +18,7 @@ import { getDb } from "../db.ts";
 import { generateApiKey, hashApiKey } from "../lib/crypto.ts";
 import { notFound } from "../lib/errors.ts";
 import { supabaseAuth } from "../middleware/supabase-auth.ts";
-import { dailyCounts, heatmapByYear, retentionCurve } from "../services/stats.ts";
+import { dailyCounts, heatmapByYear, overview, retentionCurve } from "../services/stats.ts";
 
 const accountApp = new OpenAPIHono<{
   Variables: { auth: { userId: string; email: string } };
@@ -206,6 +207,23 @@ accountApp.openapi(
     const { from, to } = c.req.valid("query");
     const { userId } = c.get("auth");
     return c.json(await dailyCounts(getDb(), userId, from, to), 200);
+  },
+);
+
+accountApp.openapi(
+  createRoute({
+    method: "get",
+    path: "/stats/overview",
+    responses: {
+      200: {
+        content: { "application/json": { schema: OverviewResponseSchema } },
+        description: "Dashboard overview tile (due now, reviews today, streak, total cards)",
+      },
+    },
+  }),
+  async (c) => {
+    const { userId } = c.get("auth");
+    return c.json(await overview(getDb(), userId), 200);
   },
 );
 
