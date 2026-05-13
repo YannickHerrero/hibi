@@ -6,6 +6,7 @@ import {
   CreateApiKeyResponseSchema,
   HeatmapQuerySchema,
   HeatmapResponseSchema,
+  RetentionResponseSchema,
   UUIDSchema,
 } from "@hibi/types";
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
@@ -14,7 +15,7 @@ import { getDb } from "../db.ts";
 import { generateApiKey, hashApiKey } from "../lib/crypto.ts";
 import { notFound } from "../lib/errors.ts";
 import { supabaseAuth } from "../middleware/supabase-auth.ts";
-import { heatmapByYear } from "../services/stats.ts";
+import { heatmapByYear, retentionCurve } from "../services/stats.ts";
 
 const accountApp = new OpenAPIHono<{
   Variables: { auth: { userId: string; email: string } };
@@ -167,6 +168,23 @@ accountApp.openapi(
     const { year } = c.req.valid("query");
     const { userId } = c.get("auth");
     return c.json(await heatmapByYear(getDb(), userId, year), 200);
+  },
+);
+
+accountApp.openapi(
+  createRoute({
+    method: "get",
+    path: "/stats/retention",
+    responses: {
+      200: {
+        content: { "application/json": { schema: RetentionResponseSchema } },
+        description: "Retention curve",
+      },
+    },
+  }),
+  async (c) => {
+    const { userId } = c.get("auth");
+    return c.json(await retentionCurve(getDb(), userId), 200);
   },
 );
 
