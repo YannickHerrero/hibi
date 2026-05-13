@@ -4,6 +4,8 @@ import {
   ApiKeySchema,
   CreateApiKeyInputSchema,
   CreateApiKeyResponseSchema,
+  DailyCountQuerySchema,
+  DailyCountResponseSchema,
   HeatmapQuerySchema,
   HeatmapResponseSchema,
   RetentionResponseSchema,
@@ -15,7 +17,7 @@ import { getDb } from "../db.ts";
 import { generateApiKey, hashApiKey } from "../lib/crypto.ts";
 import { notFound } from "../lib/errors.ts";
 import { supabaseAuth } from "../middleware/supabase-auth.ts";
-import { heatmapByYear, retentionCurve } from "../services/stats.ts";
+import { dailyCounts, heatmapByYear, retentionCurve } from "../services/stats.ts";
 
 const accountApp = new OpenAPIHono<{
   Variables: { auth: { userId: string; email: string } };
@@ -185,6 +187,25 @@ accountApp.openapi(
   async (c) => {
     const { userId } = c.get("auth");
     return c.json(await retentionCurve(getDb(), userId), 200);
+  },
+);
+
+accountApp.openapi(
+  createRoute({
+    method: "get",
+    path: "/stats/daily",
+    request: { query: DailyCountQuerySchema },
+    responses: {
+      200: {
+        content: { "application/json": { schema: DailyCountResponseSchema } },
+        description: "Per-day review counts with rating breakdown",
+      },
+    },
+  }),
+  async (c) => {
+    const { from, to } = c.req.valid("query");
+    const { userId } = c.get("auth");
+    return c.json(await dailyCounts(getDb(), userId, from, to), 200);
   },
 );
 
