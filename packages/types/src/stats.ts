@@ -51,3 +51,11 @@ export const DailyCountResponseSchema = z.object({
   days: z.array(DailyCountSchema),
 });
 export type DailyCountResponse = z.infer<typeof DailyCountResponseSchema>;
+
+export const OverviewResponseSchema = z.object({
+  dueNow: z.number().int().nonnegative(),
+  reviewsToday: z.number().int().nonnegative(),
+  streakDays: z.number().int().nonnegative(),
+  totalCards: z.number().int().nonnegative(),
+});
+export type OverviewResponse = z.infer<typeof OverviewResponseSchema>;
