@@ -37,6 +37,12 @@ src/
 - `/v1/account/*` uses **Supabase JWT** auth (portal only). `/v1/account/stats/*` mirrors the API-key `/v1/stats/*` surface so the portal can read its own stats over a JWT — shared SQL lives in `services/stats.ts`.
 - Don't mix the two on the same route.
 
+## CORS policy
+
+- `/v1/account/*` (portal/JWT) — origin-locked to `PORTAL_URL`, `credentials: true`. The portal's session is the thing being protected.
+- Everything else (API-key surface) — `origin: "*"`, no credentials. The API key in `Authorization: Bearer` is the auth boundary; the Origin header isn't. This is intentional so third-party browser apps in the ecosystem can call the API.
+- Don't re-introduce an origin allow-list on the API-key routes. If we need per-key origin restriction later, do it as a per-key `allowed_origins` column, not a global CORS allow-list.
+
 ## Common gotchas
 
 - All routes filter by `userId` from `c.get("auth")`. Never trust an `id` in the request body for ownership.
