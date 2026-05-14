@@ -16,13 +16,22 @@ const app = new OpenAPIHono();
 
 app.use("*", logger());
 
+// CORS policy is split by route:
+// - /v1/account/* uses Supabase JWT (portal-only) — origin-locked to PORTAL_URL.
+// - Everything else uses API-key Bearer auth. The key is the security boundary,
+//   not the origin, so CORS is open to support third-party apps in the ecosystem.
 app.use("*", async (c, next) => {
   const env = getEnv();
-  return cors({
-    origin:
-      env.NODE_ENV === "development" ? "*" : [env.PORTAL_URL, env.KIOKU_URL],
-    credentials: true,
-  })(c, next);
+  const isPortalRoute = c.req.path.startsWith("/v1/account/");
+
+  if (isPortalRoute) {
+    return cors({
+      origin: env.NODE_ENV === "development" ? "*" : env.PORTAL_URL,
+      credentials: true,
+    })(c, next);
+  }
+
+  return cors({ origin: "*", credentials: false })(c, next);
 });
 
 app.onError((err, c) => {
