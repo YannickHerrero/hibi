@@ -59,13 +59,23 @@ app.route("/v1/uploads", uploadsApp);
 // word-status app mounts both /v1/word-status and /v1/known-words.
 app.route("/v1", wordStatusApp);
 
+app.openAPIRegistry.registerComponent("securitySchemes", "bearerAuth", {
+  type: "http",
+  scheme: "bearer",
+  bearerFormat: "hibi_<key>",
+  description:
+    "API key issued from the user's portal at app.hibi.app. Send it as `Authorization: Bearer hibi_<key>`. /v1/account/* routes accept a Supabase JWT instead (portal-only).",
+});
+
 app.doc("/openapi.json", {
   openapi: "3.1.0",
   info: {
     title: "Hibi API",
     version: "0.0.0",
-    description: "Flashcard backend for the Hibi SRS ecosystem.",
+    description:
+      "Flashcard backend for the Hibi SRS ecosystem. Authenticate with a per-user API key (Bearer hibi_<key>). The official TypeScript SDK is published as `hibi-client` on npm.",
   },
+  security: [{ bearerAuth: [] }],
 });
 
 app.get(
