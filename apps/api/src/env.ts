@@ -13,7 +13,6 @@ const EnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   API_KEY_PEPPER: z.string().min(32),
   PORTAL_URL: z.string().url().default("http://localhost:5173"),
-  KIOKU_URL: z.string().url().default("https://hibi-kioku.vercel.app"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
 
