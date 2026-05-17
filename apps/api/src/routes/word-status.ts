@@ -160,7 +160,7 @@ wordStatusApp.openapi(
                'srs'::text AS source,
                c.id AS card_id,
                cs.scheduled_days::int AS interval_days,
-               cs.updated_at
+               COALESCE(cs.last_review, c.updated_at) AS updated_at
           FROM ${cards} c
           JOIN ${cardStates} cs ON cs.card_id = c.id
          WHERE c.user_id = ${userId}
