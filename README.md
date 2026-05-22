@@ -2,9 +2,24 @@
 
 > Day by day. — A self-hosted, web-API-based SRS (Spaced Repetition System) for Japanese sentence mining.
 
-This monorepo holds the Hibi API, web portal, documentation site, and design-system reference site. Mobile apps (Kiseki, Horu) and the desktop mining client (Tsumu) live in separate sibling repos.
+This monorepo is the **core** of the Hibi ecosystem: it holds the Hibi API, account portal, stats dashboard, documentation site, and design-system reference site, and publishes the `hibi-client` SDK that every other app builds on. The mining and review clients live in their own sibling repos — see below.
 
-See [`../hibi-ecosystem-overview.md`](../hibi-ecosystem-overview.md) for the full architectural rationale.
+## The Hibi ecosystem
+
+Hibi is a **central API with many clients**: one flashcard backend, user-owned API keys, and a family of apps that all speak to it through the `hibi-client` SDK. *Mining* clients turn immersion content — video, audio, text — into SRS cards; *review* clients are where you study them.
+
+| App | Role | Platform | Repo |
+|---|---|---|---|
+| **Hibi** | Core: API, account portal, stats dashboard, docs, design system, `hibi-client` SDK | Web | this monorepo |
+| **Hibi Kioku** — 記憶, *"memory"* | Review: study due cards and browse your card library | Web | [hibi-kioku](https://github.com/YannickHerrero/hibi-kioku) |
+| **Hibi Nuku** — 抜く, *"extraction"* | Mining: upload anime/shows, watch with a popup dictionary, mine sentences | Web (self-hosted) | [hibi-nuku](https://github.com/YannickHerrero/hibi-nuku) |
+| **Hibi Toru** | Mining: pair a video with subtitles, watch with tap-to-define, mine cards | Mobile (Expo) | [hibi-toru](https://github.com/YannickHerrero/hibi-toru) |
+| **Hibi Koe** — 声, *"voice"* | Mining: passive listening — import audio + subtitles into a Spotify-style player | Mobile (Expo) | [Hibi-Koe](https://github.com/YannickHerrero/Hibi-Koe) |
+| **Hibi Yomi** — 読, *"read"* | Mining: graded reader — import a story, tap-to-define, mine cards | Mobile (Expo) | [hibi-yomi](https://github.com/YannickHerrero/hibi-yomi) |
+
+**How a card flows:** a mining client tokenises immersion content locally (kuromoji / lindera + JMdict), shows a Yomitan-style popup, and writes the card — sentence, furigana, audio clip, screenshot, kanji breakdown — into the Hibi API. From there it is FSRS-scheduled and reviewed in **Hibi Kioku** or any other review surface.
+
+The API itself is strictly a flashcard backend — cards, reviews, stats, account/keys. Dictionary data and morphological analysis live entirely inside each client. See [`../hibi-ecosystem-overview.md`](../hibi-ecosystem-overview.md) for the full architectural rationale.
 
 ## Layout
 
