@@ -19,3 +19,11 @@ export function badRequest(message: string): HTTPException {
 export function conflict(message: string): HTTPException {
   return new HTTPException(409, { message });
 }
+
+export function preconditionRequired(message: string): HTTPException {
+  return new HTTPException(428, { message });
+}
+
+export function badGateway(message = "Upstream error"): HTTPException {
+  return new HTTPException(502, { message });
+}
