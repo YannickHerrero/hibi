@@ -6,6 +6,7 @@ const TEST_ENV = {
   SUPABASE_ANON_KEY: "anon-key",
   SUPABASE_SERVICE_ROLE_KEY: "service-key",
   API_KEY_PEPPER: "x".repeat(32),
+  OPENROUTER_ENCRYPTION_KEY: Buffer.alloc(32, 0xab).toString("base64"),
   PORTAL_URL: "http://localhost:5173",
   NODE_ENV: "test" as const,
 };
