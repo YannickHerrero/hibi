@@ -27,3 +27,24 @@ export const CreateApiKeyResponseSchema = z.object({
   rawKey: z.string(),
 });
 export type CreateApiKeyResponse = z.infer<typeof CreateApiKeyResponseSchema>;
+
+export const SaveOpenRouterKeyInputSchema = z.object({
+  apiKey: z.string().min(1).max(512),
+});
+export type SaveOpenRouterKeyInput = z.infer<typeof SaveOpenRouterKeyInputSchema>;
+
+// Returned by PUT /v1/account/openrouter-key after a successful probe.
+// Mirrors the fields OpenRouter's GET /auth/key exposes.
+export const OpenRouterKeyInfoSchema = z.object({
+  label: z.string(),
+  usage: z.number().nullable(),
+  limit: z.number().nullable(),
+});
+export type OpenRouterKeyInfo = z.infer<typeof OpenRouterKeyInfoSchema>;
+
+export const OpenRouterKeyStatusSchema = z.object({
+  configured: z.boolean(),
+  keyLabel: z.string().nullable().optional(),
+  updatedAt: TimestampSchema.nullable().optional(),
+});
+export type OpenRouterKeyStatus = z.infer<typeof OpenRouterKeyStatusSchema>;
