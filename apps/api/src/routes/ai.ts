@@ -9,6 +9,7 @@ import { apiKeyAuth } from "../middleware/api-key.ts";
 
 const ALLOWED_CHAT_MODELS = new Set<string>(["anthropic/claude-sonnet-4.5"]);
 const ALLOWED_TRANSCRIPTION_MODELS = new Set<string>(["openai/whisper-large-v3-turbo"]);
+const ALLOWED_SPEECH_MODELS = new Set<string>(["openai/gpt-4o-mini-tts-2025-12-15"]);
 
 const aiApp = new OpenAPIHono<{
   Variables: { auth: { userId: string; apiKeyId: string } };
@@ -124,6 +125,60 @@ aiApp.openapi(
       status: upstream.status,
       headers: {
         "content-type": upstream.headers.get("content-type") ?? "application/json",
+      },
+    });
+  },
+);
+
+const SpeechRequestSchema = z
+  .object({
+    model: z.string(),
+  })
+  .loose();
+
+aiApp.openapi(
+  createRoute({
+    method: "post",
+    path: "/audio/speech",
+    request: {
+      body: { content: { "application/json": { schema: SpeechRequestSchema } } },
+    },
+    responses: {
+      200: { description: "Synthesized audio (binary, format depends on response_format)" },
+      400: { description: "Model not allowed or malformed body" },
+      428: { description: "OpenRouter API key not configured for this account" },
+      502: { description: "Upstream OpenRouter error" },
+    },
+  }),
+  async (c) => {
+    const { userId } = c.get("auth");
+    const body = c.req.valid("json");
+
+    if (!ALLOWED_SPEECH_MODELS.has(body.model)) {
+      throw badRequest(`Model "${body.model}" is not allowed`);
+    }
+
+    const apiKey = await getStoredOpenRouterKey(userId);
+
+    let upstream: Response;
+    try {
+      upstream = await fetch(`${OPENROUTER_BASE}/audio/speech`, {
+        method: "POST",
+        headers: buildOpenRouterHeaders(apiKey, { contentType: "application/json" }),
+        body: JSON.stringify(body),
+      });
+    } catch (cause) {
+      throw badGateway(`OpenRouter unreachable: ${(cause as Error).message}`);
+    }
+
+    if (!upstream.body) {
+      throw badGateway("OpenRouter returned an empty body");
+    }
+
+    return new Response(upstream.body, {
+      status: upstream.status,
+      headers: {
+        "content-type": upstream.headers.get("content-type") ?? "audio/mpeg",
       },
     });
   },
