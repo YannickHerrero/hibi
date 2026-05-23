@@ -12,6 +12,7 @@ const EnvSchema = z.object({
   SUPABASE_ANON_KEY: z.string().min(1),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   API_KEY_PEPPER: z.string().min(32),
+  OPENROUTER_ENCRYPTION_KEY: z.string().min(44),
   PORTAL_URL: z.string().url().default("http://localhost:5173"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
