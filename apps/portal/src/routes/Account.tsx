@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ApiKeysSection } from "../components/ApiKeysSection.tsx";
+import { OpenRouterKeySection } from "../components/OpenRouterKeySection.tsx";
 import { useAuth } from "../lib/auth.tsx";
 import { getSupabase } from "../lib/supabase.ts";
 import { THEME_SWATCHES, THEMES, useTheme } from "../lib/theme.ts";
@@ -108,6 +109,10 @@ export function Account() {
           );
         })}
       </div>
+
+      <div className="rule-soft" style={{ margin: "48px 0 24px" }} />
+
+      <OpenRouterKeySection />
 
       <div className="rule-soft" style={{ margin: "48px 0 24px" }} />
 
