@@ -22,6 +22,13 @@
       "when": 1778440185544,
       "tag": "0002_next_umar",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1779526679627,
+      "tag": "0003_wandering_phalanx",
+      "breakpoints": true
     }
   ]
 }
