@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   CardSchema,
+  ClientAiStatusSchema,
   type CreateCardInput,
   CreateCardInputSchema,
   type DailyCountQuery,
@@ -140,6 +141,42 @@ export function createHibiClient(config: HibiClientConfig) {
     return schema.parse(body);
   }
 
+  // Like request() but returns the raw Response without parsing. Used by
+  // /v1/ai/* proxy routes where the response body might be SSE, binary
+  // audio, or OR-shaped JSON we deliberately don't validate.
+  async function requestRaw(
+    method: string,
+    path: string,
+    init: { body?: unknown; query?: Record<string, string | number | undefined> } = {},
+  ): Promise<Response> {
+    const url = new URL(`${base}${path}`);
+    if (init.query) {
+      for (const [k, v] of Object.entries(init.query)) {
+        if (v !== undefined) url.searchParams.set(k, String(v));
+      }
+    }
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${config.apiKey}`,
+    };
+    const requestInit: RequestInit = { method, headers };
+    if (init.body !== undefined) {
+      headers["Content-Type"] = "application/json";
+      requestInit.body = JSON.stringify(init.body);
+    }
+    const res = await fetchImpl(url.toString(), requestInit);
+    if (!res.ok) {
+      const text = await res.text();
+      let body: unknown = text;
+      try {
+        body = JSON.parse(text);
+      } catch {
+        // keep as text
+      }
+      throw asError(res.status, body);
+    }
+    return res;
+  }
+
   function buildUploadForm(input: UploadInput, defaultName: string): FormData {
     const fd = new FormData();
     if (typeof Blob !== "undefined" && input instanceof Blob) {
@@ -268,6 +305,31 @@ export function createHibiClient(config: HibiClientConfig) {
         return request("GET", "/v1/stats/daily", DailyCountResponseSchema, {
           query: { from: query.from, to: query.to },
         });
+      },
+    },
+
+    ai: {
+      // Discovery: is the user's OpenRouter key configured server-side?
+      // Hit this on app start before surfacing AI-dependent UI.
+      async key() {
+        return request("GET", "/v1/ai/key", ClientAiStatusSchema);
+      },
+      // OpenRouter chat completions, proxied. Returns the raw Response
+      // so the caller can stream from res.body (when stream:true) or
+      // call res.json() (when stream:false).
+      async chatCompletions(body: Record<string, unknown>) {
+        return requestRaw("POST", "/v1/ai/chat/completions", { body });
+      },
+      audio: {
+        async transcriptions(body: Record<string, unknown>): Promise<unknown> {
+          const res = await requestRaw("POST", "/v1/ai/audio/transcriptions", { body });
+          return res.json();
+        },
+        // Returns the raw audio bytes (MP3 by default).
+        async speech(body: Record<string, unknown>): Promise<Uint8Array> {
+          const res = await requestRaw("POST", "/v1/ai/audio/speech", { body });
+          return new Uint8Array(await res.arrayBuffer());
+        },
       },
     },
   };
