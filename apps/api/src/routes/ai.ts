@@ -1,9 +1,15 @@
+import { openrouterCredentials } from "@hibi/db/schema";
+import { ClientAiStatusSchema } from "@hibi/types";
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { eq } from "drizzle-orm";
+import { getDb } from "../db.ts";
+import { decryptSecret } from "../lib/crypto.ts";
 import { badRequest, badGateway } from "../lib/errors.ts";
 import {
   buildOpenRouterHeaders,
   getStoredOpenRouterKey,
   OPENROUTER_BASE,
+  probeOpenRouterKey,
 } from "../lib/openrouter.ts";
 import { apiKeyAuth } from "../middleware/api-key.ts";
 
@@ -16,6 +22,33 @@ const aiApp = new OpenAPIHono<{
 }>();
 
 aiApp.use("*", apiKeyAuth);
+
+aiApp.openapi(
+  createRoute({
+    method: "get",
+    path: "/key",
+    responses: {
+      200: {
+        content: { "application/json": { schema: ClientAiStatusSchema } },
+        description: "AI proxy status: whether OR is configured for this user, plus live usage",
+      },
+    },
+  }),
+  async (c) => {
+    const { userId } = c.get("auth");
+    const db = getDb();
+    const [row] = await db
+      .select({ encryptedKey: openrouterCredentials.encryptedKey })
+      .from(openrouterCredentials)
+      .where(eq(openrouterCredentials.userId, userId))
+      .limit(1);
+
+    if (!row) return c.json({ configured: false as const }, 200);
+
+    const info = await probeOpenRouterKey(decryptSecret(row.encryptedKey));
+    return c.json({ configured: true as const, ...info }, 200);
+  },
+);
 
 const ChatCompletionsRequestSchema = z
   .object({
