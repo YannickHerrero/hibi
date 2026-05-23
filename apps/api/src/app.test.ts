@@ -32,9 +32,19 @@ describe("app", () => {
     const { app } = await import("./app.ts");
     const res = await app.request("/openapi.json");
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { openapi: string; info: { title: string } };
+    const body = (await res.json()) as {
+      openapi: string;
+      info: { title: string };
+      paths: Record<string, unknown>;
+    };
     expect(body.openapi).toBe("3.1.0");
     expect(body.info.title).toBe("Hibi API");
+    // Lock the AI proxy surface so accidental refactors don't lose it.
+    expect(body.paths["/v1/ai/key"]).toBeDefined();
+    expect(body.paths["/v1/ai/chat/completions"]).toBeDefined();
+    expect(body.paths["/v1/ai/audio/transcriptions"]).toBeDefined();
+    expect(body.paths["/v1/ai/audio/speech"]).toBeDefined();
+    expect(body.paths["/v1/account/openrouter-key"]).toBeDefined();
   });
 
   it("rejects unauthenticated requests to /v1/cards", async () => {
